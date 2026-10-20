@@ -1,5 +1,5 @@
 import * as T from 'three';
-import {OrbitControls} from './vendor/OrbitControls.js';
+import {OrbitControls} from './vendor/OrbitControls.js?v=2';
 import {defaultConfig,validateConfig,jointSpecs,DIMENSIONS,MOTORS,JOINT_NAMES,normalizeTarget,durationFor} from './robot-config.js';
 import {makeRobot} from './robot-model.js';
 import {parseSketch} from './arduino.js';
@@ -51,7 +51,7 @@ $('#download-sketch').onclick=()=>download('playground.ino',$('#editor').value,'
 function reset(){stop();release();objects.forEach(o=>{scene.remove(o);o.geometry.dispose();o.material.dispose()});objects=[];nextId=1;angles=[...arm.home];arm.pose(angles);addObject('cube',-.65,.45);addObject('cylinder',.55,.35);addObject('sphere',.8,-.3);updateControls();log('Workspace reset · 3 objects ready')}
 $('#editor').value=readSaved('axis-arduino-v1',examples.pick);$('#editor').oninput=()=>save('axis-arduino-v1',$('#editor').value);$('#example').onchange=e=>{$('#editor').value=examples[e.target.value];save('axis-arduino-v1',$('#editor').value)};
 $('#editor').onkeydown=e=>{if(e.key==='Tab'){e.preventDefault();const el=e.target;el.setRangeText('  ',el.selectionStart,el.selectionEnd,'end')}if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){e.preventDefault();run()}};
-function run(){stop();try{parseSketch($('#editor').value)}catch(e){log(e.message,true);return}const id=runId;$('#run').disabled=true;$('#mode').textContent='Arduino running';log('Sketch started · setup() once, loop() repeats until Stop');worker=new Worker('./runner.js',{type:'module'});
+function run(){stop();try{parseSketch($('#editor').value)}catch(e){log(e.message,true);return}const id=runId;$('#run').disabled=true;$('#mode').textContent='Arduino running';log('Sketch started · setup() once, loop() repeats until Stop');worker=new Worker('./runner.js?v=2',{type:'module'});
   worker.onmessage=async({data:m})=>{if(id!==runId)return;if(m.type==='log')return log(m.message);if(m.type==='done'||m.type==='error'){log(m.type==='done'?'Sketch complete':m.message,m.type==='error');stop();return}try{const value=await command(m.method,m.args);if(id===runId)worker?.postMessage({id:m.id,value})}catch(e){if(id===runId)worker?.postMessage({id:m.id,error:e.message})}};
   worker.onerror=e=>{log(e.message||'Sketch worker could not start.',true);stop()};worker.postMessage({type:'start',code:$('#editor').value});
 }
