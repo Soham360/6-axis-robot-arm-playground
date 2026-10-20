@@ -73,3 +73,7 @@ Use Learn robotics for lessons on joints, coordinates, reach, object handling, a
 Drag the blue tool handle to teach on a horizontal plane. Adjust Tool height for vertical motion or use Joint controls. Click Record point at each pose, then Play path to interpolate the captured joint angles. Coordinates, angles, elapsed capture times and gripper state are saved locally. Motor limits can extend requested playback times. The blue polyline connects captured coordinates; interpolated joint motion may curve between them. Stop interrupts playback; Clear path removes the saved path. Export .ino creates an Axis.h sketch. Rerecord after changing the arm build.
 
 Collision response runs in small angular steps during arm movement to reduce tunneling. Shapes are approximations, and contacts do not model friction, mass, torque, or self-collision.
+
+### Path workspace improvements
+
+Undo point removes the last recorded pose. Save path JSON creates a portable backup; Load path JSON validates and restores up to 2,000 poses. Playback speed offers 0.5×, 1× and 2× capture timing, subject to motor speed limits. The estimated duration is requested time, not a motor-aware prediction. Escape stops all movement from anywhere. Workbench tabs support arrow keys, Home and End. The height readout shows actual tool height in millimeters.
