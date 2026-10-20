@@ -3,7 +3,7 @@ import {jointSpecs, normalizeTarget, MOTORS} from './robot-config.js';
 export function makeRobot(config) {
   const root=new T.Group(), joints=[], fingers=[], specs=jointSpecs(config);
   const mat=(color,metalness=.2)=>new T.MeshStandardMaterial({color,metalness,roughness:.38});
-  const green=mat('#c2e99c'), dark=mat('#353f46',.65), silver=mat('#a2adb0',.75);
+  const green=mat('#e4e7eb'), dark=mat('#344356',.65), silver=mat('#9cabb8',.75);
   const d=Object.fromEntries(Object.entries(config.dimensions).map(([k,v])=>[k,v/1000]));
   function mesh(geometry,material,parent,x=0,y=0,z=0){const m=new T.Mesh(geometry,material);m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;parent.add(m);return m}
   const box=(w,h,z,m,p,x=0,y=0)=>mesh(new T.BoxGeometry(w,h,z),m,p,x,y);

@@ -5,21 +5,21 @@ import {makeRobot} from './robot-model.js';
 import {parseSketch} from './arduino.js';
 import {examples} from './examples.js';
 const $=s=>document.querySelector(s),canvas=$('#scene');
-const scene=new T.Scene();scene.background=new T.Color('#1c2328');scene.fog=new T.Fog('#1c2328',8,18);
+const scene=new T.Scene();scene.background=new T.Color('#e9edef');scene.fog=new T.Fog('#e9edef',8,18);
 let renderer;
 try{renderer=new T.WebGLRenderer({canvas,antialias:true});}catch(e){$('#scene-error').hidden=false;$('#scene-error').textContent='3D rendering could not start. Enable WebGL in your browser and reload.';throw e}
 renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;
 const camera=new T.PerspectiveCamera(40,1,.01,40),orbit=new OrbitControls(camera,canvas);orbit.enableDamping=true;orbit.minDistance=1.4;orbit.maxDistance=9;orbit.maxPolarAngle=Math.PI/2-.04;
 function resetCamera(){camera.position.set(3,2.6,3.5);orbit.target.set(0,.65,0);orbit.update()}resetCamera();
 scene.add(new T.HemisphereLight(0xe8f2ff,0x444b37,2.6));const sun=new T.DirectionalLight(0xfff6df,4);sun.position.set(2,5,3);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);Object.assign(sun.shadow.camera,{left:-3,right:3,top:3,bottom:-3});scene.add(sun);
-const table=new T.Mesh(new T.BoxGeometry(4,.12,3.3),new T.MeshStandardMaterial({color:'#303b40'}));table.position.y=-.08;table.receiveShadow=true;scene.add(table);
-const grid=new T.GridHelper(4,32,0x718078,0x425058);grid.position.y=-.014;scene.add(grid);const axes=new T.AxesHelper(.35);axes.position.set(-1.7,.005,1.35);scene.add(axes);
+const table=new T.Mesh(new T.BoxGeometry(4,.12,3.3),new T.MeshStandardMaterial({color:'#d4dce0'}));table.position.y=-.08;table.receiveShadow=true;scene.add(table);
+const grid=new T.GridHelper(4,32,0xa2afb8,0xc0cbd2);grid.position.y=-.014;scene.add(grid);const axes=new T.AxesHelper(.35);axes.position.set(-1.7,.005,1.35);scene.add(axes);
 function readSaved(key,fallback){try{return JSON.parse(localStorage.getItem(key))??fallback}catch{return fallback}}
 function save(key,value){try{localStorage.setItem(key,JSON.stringify(value))}catch{log('Browser storage unavailable; this session still works.')}}
 let config;try{config=validateConfig(readSaved('axis-build-v1',defaultConfig()))}catch{config=defaultConfig()}
 let arm=makeRobot(config),angles=[...arm.home],closed=false,held=null,objects=[],nextId=1,activeMotion=null,worker=null,runId=0,servoTargets=new Array(6).fill(null);scene.add(arm.root);
 function log(msg,error=false){const line=document.createElement('div');line.textContent=`${new Date().toLocaleTimeString([],{hour12:false})}  ${String(msg)}`;if(error)line.className='error';$('#logs').append(line);while($('#logs').children.length>400)$('#logs').firstChild.remove();$('#logs').scrollTop=999999}
-function addObject(shape,x,z){const geometry=shape==='sphere'?new T.SphereGeometry(.075,24,16):shape==='cylinder'?new T.CylinderGeometry(.065,.065,.15,32):new T.BoxGeometry(.15,.15,.15);const mesh=new T.Mesh(geometry,new T.MeshStandardMaterial({color:['#efad70','#8bbad4','#c6a5d5'][objects.length%3],roughness:.38}));mesh.position.set(x??(.35+Math.random()*.75),.075,z??(-.6+Math.random()*1.2));mesh.castShadow=true;mesh.receiveShadow=true;mesh.userData={id:`${shape}-${nextId++}`,shape,fallSpeed:0};scene.add(mesh);objects.push(mesh);return mesh}
+function addObject(shape,x,z){const geometry=shape==='sphere'?new T.SphereGeometry(.075,24,16):shape==='cylinder'?new T.CylinderGeometry(.065,.065,.15,32):new T.BoxGeometry(.15,.15,.15);const mesh=new T.Mesh(geometry,new T.MeshStandardMaterial({color:['#c88653','#6087ab','#7c8b76'][objects.length%3],roughness:.38}));mesh.position.set(x??(.35+Math.random()*.75),.075,z??(-.6+Math.random()*1.2));mesh.castShadow=true;mesh.receiveShadow=true;mesh.userData={id:`${shape}-${nextId++}`,shape,fallSpeed:0};scene.add(mesh);objects.push(mesh);return mesh}
 function grip(){if(held)return;closed=true;const p=arm.position();const nearest=objects.filter(o=>o.position.distanceTo(p)<.16).sort((a,b)=>a.position.distanceTo(p)-b.position.distanceTo(p))[0];if(nearest){held=nearest;arm.tip.attach(held);held.position.set(0,0,0);log(`Grasped ${held.userData.id}`)}else log('Gripper closed · no object within reach');updateControls()}
 function release(){closed=false;if(held){scene.attach(held);held.position.y=Math.max(.075,held.position.y);held.userData.fallSpeed=0;log(`Released ${held.userData.id}`);held=null}updateControls()}
 function updateControls(){arm.grip(closed);$('#gripper').textContent=closed?'Open gripper':'Close gripper';$('#grip-status').textContent=closed?'Closed':'Open';$('#payload').textContent=held?.userData.id??'None';angles.forEach((v,i)=>{const el=$(`#joint-${i}`);if(el){el.value=v;$(`#value-${i}`).textContent=`${v.toFixed(1)}°`}})}
