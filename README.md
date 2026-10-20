@@ -14,7 +14,7 @@ Open **Build arm** to edit base height, upper-arm and forearm lengths, wrist/too
 
 Choose a generic positional servo (180° or 270° travel) or 200-step/revolution stepper for each of six joints. Configure motor shaft speed, gear reduction, pin assignment, and stepper microsteps. Motor speed and gearing constrain movement duration; stepper targets are quantized. Gearing also reduces positional servo travel. Shoulder, elbow and wrist-pitch motor housings change size with the profile.
 
-These are educational profiles, not specifications of actual products. Torque, electrical circuits, rigid-body collisions and loading are not simulated. Manual sliders directly pose the joints; programmed movements respect motor speeds.
+These are educational profiles, not specifications of actual products. Torque, electrical circuits and loading are not simulated. Scene objects respond to arm contacts, other objects, and gravity using conservative arm boxes and 75 mm round object proxies; this is simplified contact behavior rather than a rigid-body dynamics engine. Manual sliders directly pose the joints; programmed movements respect motor speeds.
 
 Applied builds and sketches are saved locally in the browser. Export/import build JSON to share a configuration. Applying a build stops the sketch and releases any payload. Reset scene resets objects and pose while keeping your build.
 
@@ -65,3 +65,11 @@ Drag to orbit, scroll to zoom, right-drag to pan. Add cubes, cylinders and spher
 All runtime files are static. Deploy the root with **all modules and vendor/OrbitControls.js** intact. The import map resolves Three.js r170 from a version-pinned CDN URL; OrbitControls and its MIT license are included. A loading/error message stays visible if the rendering module fails to load. Fonts are optional.
 
 For tests, install the pinned development dependency with `npm install`, then run `npm test` (or `node --test tests/*.test.js`). Tests cover sketch semantics, worker interruption, input validation, geometry, inverse kinematics and motor behavior.
+
+## Learn and teach
+
+Use Learn robotics for lessons on joints, coordinates, reach, object handling, arm design, and teaching paths. Arduino examples contains four annotated sketches with links that load them into the simulator.
+
+Drag the blue tool handle to teach on a horizontal plane. Adjust Tool height for vertical motion or use Joint controls. Click Record point at each pose, then Play path to interpolate the captured joint angles. Coordinates, angles, elapsed capture times and gripper state are saved locally. Motor limits can extend requested playback times. The blue polyline connects captured coordinates; interpolated joint motion may curve between them. Stop interrupts playback; Clear path removes the saved path. Export .ino creates an Axis.h sketch. Rerecord after changing the arm build.
+
+Collision response runs in small angular steps during arm movement to reduce tunneling. Shapes are approximations, and contacts do not model friction, mass, torque, or self-collision.
