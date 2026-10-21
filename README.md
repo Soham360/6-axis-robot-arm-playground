@@ -57,8 +57,10 @@ Deploy the complete root, including `vendor/`, `assets/` and `downloads/`. The s
 
 ## Visual block coding
 
-Open the **Blocks** tab for Scratch-style programming. Add blocks from Motion, Gripper, Control or Messages. Drag onto insertion slots to reorder or nest blocks; + buttons, up/down controls and Add inside repeat menus also work without dragging. Blocks support tool coordinates, six joint angles, current-pose capture, home, gripper actions, waits, messages and nested repeats. The forever checkbox repeats the whole stack.
+Code editor contains **Arduino** and **Blocks** mode buttons. Clicking Blocks parses the current sketch into visual blocks; clicking Arduino generates the sketch from any block changes. Switching without editing blocks preserves the original source, comments and formatting exactly. Block values synchronize into project autosaves as well.
 
-Run blocks uses the same motor-limited worker interpreter as sketches. A run-once stack finishes automatically. Pause/Resume and Step highlight the executing block. Undo, duplicate, remove, a starter program and generated Arduino download are included. Blocks persist locally and are included in project files; older projects load an empty block stack.
+Conversion supports Axis moveTo/moveJ/home/grip/release, delay, Serial.println messages, simple scalar constants, and fixed-count for loops starting at zero with ++ increments. Separate setup and loop actions appear as startup and repeating stacks. Commands without visual equivalents, including Servo objects, dynamic loops, conditionals and custom functions, keep the editor in Arduino mode with a line-specific explanation and leave the source untouched. These sketches still run in Arduino mode.
 
-Block execution preserves the text sketch. Replace code editor with this sketch is an explicit one-way conversion. Arbitrary text sketches cannot be converted back into blocks.
+Add blocks from Motion, Gripper, Control or Messages. Drag onto insertion slots to reorder or nest blocks; + buttons, up/down controls and Add inside repeat menus also work without dragging. Motion blocks can capture the current pose. Nested repeats, Undo, duplicate, remove, a starter program and Arduino download are included.
+
+Block programs use the same motor-limited worker interpreter as sketches. Pause/Resume and Step highlight the executing block. A run-once stack finishes automatically; repeating stacks continue until Stop or Escape. Blocks and the synchronized sketch are included in project files.

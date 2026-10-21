@@ -1,3 +1,4 @@
+import {sketchToBlocks,compileBlocks} from './blocks-data.js';
 import {setupBlockEditor} from './block-editor.js';
 import * as T from 'three';
 import {OrbitControls} from './vendor/OrbitControls.js?v=2';
@@ -13,7 +14,7 @@ import {setupTeaching,resolveContacts} from './teaching.js';
 const $=s=>document.querySelector(s),canvas=$('#scene');
 try{await loadThor()}catch(error){$('#scene-error').textContent=`Robot assets could not load: ${error.message} Reload to retry.`;$('#live-status').textContent='Model unavailable';throw error}
 const makeConfigured=value=>value.model==='thor'?makeThor(value):makeRobot(value);
-let blockEditor=null,runningBlockCode=false;
+let blockEditor=null,runningBlockCode=false,editorMode='arduino',convertedSnapshot=null;
 const scene=new T.Scene();scene.background=new T.Color('#e9edef');scene.fog=new T.Fog('#e9edef',8,18);
 let renderer;
 try{renderer=new T.WebGLRenderer({canvas,antialias:true});}catch(e){$('#scene-error').hidden=false;$('#scene-error').textContent='3D rendering could not start. Enable WebGL in your browser and reload.';throw e}
@@ -83,8 +84,27 @@ function lineNumbers(){const gutter=$('#line-numbers');gutter.replaceChildren(..
 $('#editor').addEventListener('input',()=>{lineNumbers();$('#editor-feedback').textContent='Sketch edited · ready to run';$('#editor-feedback').classList.remove('error')});$('#editor').addEventListener('scroll',()=>$('#line-numbers').scrollTop=$('#editor').scrollTop);$('#example').addEventListener('change',lineNumbers);
 $('#pause').onclick=()=>{paused=!paused;$('#pause').textContent=paused?'Resume':'Pause';$('#mode').textContent=paused?'Paused':worker?'Arduino running':'Moving';if(!paused){stepNext=false;tracePermit?.();tracePermit=null}};
 $('#step').onclick=()=>{if(!worker){run(true);return}if(tracePermit){stepNext=true;paused=false;$('#pause').textContent='Pause';tracePermit();tracePermit=null}else{stepNext=true;paused=false;$('#pause').textContent='Pause';$('#editor-feedback').textContent='Finishing this statement; pausing before the next.'}};
-blockEditor=setupBlockEditor({run:source=>run(false,source),step:source=>{if(worker&&runningBlockCode)$('#step').click();else run(true,source)},pause:()=>$('#pause').click(),stop:()=>teaching.cancel(),position:()=>arm.position(),angles:()=>angles,openSketch(source){teaching.cancel();$('#editor').value=source;save('axis-arduino-v1',source);lineNumbers();selectTab(tabs.find(t=>t.dataset.tab==='code'))},download});
-workbench=setupWorkbench({blocks:blockEditor,T,scene,camera,orbit,arm:()=>arm,config:()=>config,angles:()=>angles,closed:()=>closed,objects:()=>objects,teaching,moveJ,stop:()=>teaching.cancel(),applyConfig,buildForm,download,log,grip,release,editor:$('#editor'),lineNumbers,readSaved,save,reset,addObject,clearObjects(){release();objects.forEach(o=>{scene.remove(o);o.geometry.dispose();o.material.dispose()});objects=[];nextId=1},pose(values){angles=[...values];arm.pose(angles);updateControls()},selectTab:name=>selectTab(tabs.find(t=>t.dataset.tab===name)),validateProject});
+function switchEditorMode(mode){
+ if(mode===editorMode)return true;
+ try{
+  if(mode==='blocks'){
+   const converted=sketchToBlocks($('#editor').value);
+   teaching.cancel();blockEditor.setProgram(converted);convertedSnapshot=JSON.stringify(converted);
+  }else{
+   const program=blockEditor.getProgram();
+   if(JSON.stringify(program)!==convertedSnapshot){$('#editor').value=compileBlocks(program).code;save('axis-arduino-v1',$('#editor').value);lineNumbers()}
+   teaching.cancel();
+  }
+  editorMode=mode;$('#arduino-view').hidden=mode==='blocks';$('#blocks').hidden=mode!=='blocks';
+  $('#mode-arduino').setAttribute('aria-pressed',String(mode==='arduino'));$('#mode-blocks').setAttribute('aria-pressed',String(mode==='blocks'));
+  $('#conversion-status').textContent=mode==='blocks'?'Converted Arduino to blocks. Switch back to update the sketch.':'Arduino sketch synchronized with blocks.';
+  return true;
+ }catch(e){$('#conversion-status').textContent=`Cannot switch to blocks: ${e.message} Your Arduino sketch is unchanged.`;return false}
+}
+$('#mode-arduino').onclick=()=>switchEditorMode('arduino');$('#mode-blocks').onclick=()=>switchEditorMode('blocks');
+blockEditor=setupBlockEditor({run:source=>run(false,source),step:source=>{if(worker&&runningBlockCode)$('#step').click();else run(true,source)},pause:()=>$('#pause').click(),stop:()=>teaching.cancel(),position:()=>arm.position(),angles:()=>angles,openSketch(){switchEditorMode('arduino')},download});
+$('#editor').addEventListener('axis-project-loaded',()=>{editorMode='arduino';convertedSnapshot=null;$('#arduino-view').hidden=false;$('#blocks').hidden=true;$('#mode-arduino').setAttribute('aria-pressed','true');$('#mode-blocks').setAttribute('aria-pressed','false');$('#conversion-status').textContent='Project loaded. Choose Blocks to convert this sketch.'});
+workbench=setupWorkbench({syncEditor(){if(editorMode==='blocks'&&JSON.stringify(blockEditor.getProgram())!==convertedSnapshot){$('#editor').value=compileBlocks(blockEditor.getProgram()).code;save('axis-arduino-v1',$('#editor').value);lineNumbers()}},blocks:blockEditor,T,scene,camera,orbit,arm:()=>arm,config:()=>config,angles:()=>angles,closed:()=>closed,objects:()=>objects,teaching,moveJ,stop:()=>teaching.cancel(),applyConfig,buildForm,download,log,grip,release,editor:$('#editor'),lineNumbers,readSaved,save,reset,addObject,clearObjects(){release();objects.forEach(o=>{scene.remove(o);o.geometry.dispose();o.material.dispose()});objects=[];nextId=1},pose(values){angles=[...values];arm.pose(angles);updateControls()},selectTab:name=>selectTab(tabs.find(t=>t.dataset.tab===name)),validateProject});
 sliders();buildForm(config);reset();lineNumbers();workbench.modelChanged();$('#scene-error').hidden=true;requestAnimationFrame(frame);
 
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){teaching.cancel();log('All motion stopped')}});
