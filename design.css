@@ -1,0 +1,83 @@
+/* Shared interface foundations. Keep preference overrides after component rules. */
+:root{--muted:#536174;--line:#d4dae2;font-optical-sizing:auto}
+body{font-size:.9375rem;line-height:1.6}
+button,.file-button,select,input:not([type=checkbox]):not([type=range]){min-height:2.5rem;font-size:.8125rem;line-height:1.4}
+button,.file-button{padding:.6rem .8rem;touch-action:manipulation}
+button:active,.file-button:active{transition:none}
+button:disabled{opacity:.55}
+a,button,input,select,textarea,summary{scroll-margin-block:5rem}
+:is(button,a,input,select,textarea,summary):focus-visible{outline:3px solid #245ac7;outline-offset:3px}
+summary{border-radius:.5rem}
+header{padding:1rem 2rem;gap:1.5rem}
+header nav{gap:.375rem}
+header nav a{display:flex;align-items:center;justify-content:center;min-height:2.75rem;padding:.6rem .9rem;font-size:.875rem}
+.header-status{gap:1.25rem;font-size:.8125rem}
+.header-status .live{font-size:.75rem}
+h1{font-size:clamp(1.9rem,3vw,2.5rem);letter-spacing:-.025em;line-height:1.15}
+h2{font-size:1.25rem;letter-spacing:-.02em;line-height:1.3}
+.eyebrow,.objects .eyebrow,.tour .eyebrow{font-size:.6875rem;color:#526174}
+.intro p:last-child,.positioning p,.recorder p,.panel>p,.builder p,.guide,.blocks-help,.blocks-intro p{font-size:.875rem;line-height:1.7;color:var(--muted)}
+.project-bar>label:first-child,.project-bar>span,.safety-status,.recorder label,.jog-controls label,#position-form label,.builder label,.builder legend,.joint label{font-size:.8125rem}
+.telemetry small,.console-title,footer,.joint small,.builder small,.builder h3 span{font-size:.75rem;color:var(--muted)}
+.telemetry strong{font-size:.8125rem;font-variant-numeric:tabular-nums}
+.telemetry{gap:1rem;padding:1.5rem 0}
+.view-tools{background:#fffffff0;backdrop-filter:blur(18px);padding:.375rem;border-radius:.875rem;gap:.25rem;left:auto;max-width:calc(100% - 1.5rem);box-shadow:0 2px 12px #263b5114}
+.view-tools button{background:transparent;backdrop-filter:none;font-size:.75rem;min-height:2.25rem;padding:.4rem .6rem;border-color:transparent}
+.view-tools button:hover{background:#e9eef6}
+.view-title,.view-title span,.view-help,.reach-toggle{font-size:.75rem;color:#435165}
+.view-help{background:#fffffff0;max-width:calc(100% - 4.5rem)}
+.reach-toggle{min-height:2.75rem;padding:.5rem .65rem;background:#fffffff0}
+.tabs{gap:.25rem;margin:1.25rem 1.25rem 0;padding:.375rem;isolation:isolate}
+.tabs button{font-size:.8125rem;padding:.55rem .65rem;flex:1 1 7rem;white-space:normal;line-height:1.35}
+.editor-mode button{font-size:.875rem;min-height:2.5rem}
+.editor-top{flex-wrap:wrap;font-size:.8125rem}
+.editor-feedback,#conversion-status,.run-bar>span,#blocks-status,.blocks-help{font-size:.8125rem;color:var(--muted)}
+.editor-wrap textarea,#line-numbers{font-size:.8125rem;line-height:1.5rem}
+#logs{font-size:.8125rem;line-height:1.8}
+.panel{padding:1.5rem}
+.builder h3,.guide h3{font-size:.9375rem}
+.guide pre,.guide dt,.lesson pre{font-size:.8125rem}
+.joint input,.recorder input[type=range]{min-height:2.75rem}
+.recorder li{gap:.65rem;padding:1rem}
+.recorder li>input,.recorder li label,.recorder li>small,.point-actions button{font-size:.8125rem}
+.studio-panel>details{margin:.875rem 0;border-radius:.875rem}
+.studio-panel>details>summary{padding:1rem;font-size:.9375rem;line-height:1.5;min-height:3rem}
+.studio-panel>details[open]>summary{background:#f4f7fb;border-radius:.875rem .875rem 0 0}
+.studio-feature{padding:.5rem 1rem 1.25rem}
+.studio-feature h2{font-size:1.125rem}
+.studio-feature p,.studio-panel>p,.studio-feature label,.studio-feature input:not([type=checkbox]),.studio-feature select,.feature-actions button,.feature-actions a,.orientation-controls,.orientation-controls label,.orientation-controls>label:first-child,.orientation-controls input[type=number],.orientation-controls button,.orientation-controls select{font-size:.8125rem}
+.studio-feature p{color:var(--muted)}
+.feature-grid{gap:.75rem;margin:1rem 0}
+.feature-actions{gap:.5rem;margin:1rem 0}
+.feature-actions a{display:inline-flex;align-items:center;min-height:2.75rem;text-decoration:underline;text-underline-offset:.2em}
+.orientation-controls input[type=number]{width:5rem}
+#calibration-rows fieldset{grid-template-columns:repeat(3,minmax(0,1fr));gap:.75rem;padding:.875rem}
+#calibration-rows label,#calibration-rows legend,#calibration-rows input{font-size:.8125rem}
+#variable-watch,#command-history,#serial-log{font-size:.8125rem}
+.block-categories button,.block-palette button,.block-fields label,.block-fields input,.block-fields select,.block-actions button,.block-workspace-tools,.block-workspace-tools span,.block-workspace-tools button,.block-workspace-tools select,.block-stack-label,.expression-help,.expression-help button,.block-hat,.blocks-loop{font-size:.8125rem}
+.block-actions{flex-wrap:wrap;gap:.375rem}
+.block-actions button{min-width:2.5rem;padding:.4rem .6rem}
+.block-motion{--block-color:#285bb4;--block-dark:#194487}
+.block-gripper{--block-color:#7b449f;--block-dark:#5c3179}
+.block-control{--block-color:#87570b;--block-dark:#684207}
+.block-output{--block-color:#176f65;--block-dark:#10554d}
+.block-variables{--block-color:#985019;--block-dark:#743b10}
+.block-functions{--block-color:#a33e66;--block-dark:#7d2d4d}
+.block-drop,.block-dropzone,.drop-zone{transition:none}
+canvas{touch-action:auto}
+#scene,#fab-canvas{touch-action:none}
+.learning{padding:3.5rem 1.75rem}
+.lesson{padding:1.75rem}
+.lesson p,.lesson li{font-size:.9375rem;line-height:1.75;color:#46566a}
+.learning-toolbar label,.learning-toolbar input,.learning-toolbar p,.lesson legend,.lesson fieldset p,.lesson-exercise strong{font-size:.875rem}
+.lesson fieldset button{font-size:.875rem;min-height:2.75rem}
+.tour p{font-size:.875rem}
+@media(min-width:1250px){.tabs button{flex-basis:7rem}.workspace>.viewport{position:relative;top:auto}.builder,.guide{overflow:visible}}
+@media(max-width:1100px){main{grid-template-columns:minmax(0,1fr)}aside{position:static;max-height:none;overflow:visible;border-top:1px solid var(--line)}.workspace{border-right:0}.tabs{position:relative}.builder,.guide{max-height:none;overflow:visible}}
+@media(max-width:600px){header{padding:.75rem 1rem;gap:.75rem}header nav{gap:.25rem;padding-top:.5rem}header nav a{font-size:.8125rem;padding:.5rem .65rem}.header-status{gap:.75rem}.workspace{padding:1.5rem 1rem}.intro{align-items:flex-start;flex-wrap:wrap}.view-tools{left:.5rem;right:.5rem;bottom:3.25rem;max-width:none;justify-content:center}.view-tools button{flex:1 1 27%;min-height:2.75rem}.viewport{height:29rem}.view-help{font-size:.6875rem;bottom:.75rem;left:.75rem}.view-title span{max-width:7rem}.reach-toggle{right:.5rem;top:.5rem}.tabs button{flex-basis:7rem}.panel{padding:1.25rem}.feature-grid,#calibration-rows fieldset{grid-template-columns:repeat(2,minmax(0,1fr))}#position-form{grid-template-columns:repeat(2,minmax(0,1fr))}.learning{padding:2rem 1rem}.lesson{padding:1.25rem}.tour{max-height:calc(100dvh - 2rem);overflow:auto;bottom:max(1rem,env(safe-area-inset-bottom))}.telemetry{grid-template-columns:1fr 1fr}.editor-top select{width:100%}}
+@media(pointer:coarse){button,.file-button,select,input:not([type=checkbox]):not([type=range]),.block-actions button{min-height:2.75rem}input[type=checkbox]{width:1.25rem;height:1.25rem}label:has(>input[type=checkbox]){min-height:2.75rem;align-content:center}button:active,.file-button:active{transform:none}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}button:active,.file-button:active{transform:none!important}}
+@media(prefers-reduced-transparency:reduce){header,.view-tools,.view-tools button,.view-help,.reach-toggle,.build-actions{background:#fff;backdrop-filter:none}}
+@media(prefers-contrast:more){:root{--muted:#243448;--line:#66758a}header,.tabs,.view-tools,.view-help,.reach-toggle,.build-actions{background:#fff;backdrop-filter:none}button,select,input,.studio-panel>details,.viewport,.lesson{border-color:#56667c}.view-tools button{border-color:#56667c}button:disabled{opacity:1;color:#66758a;background:#edf0f4}.studio-feature p,.lesson p,.lesson li{color:#243448}}
+
+.block-hat{background:#87570b}.block-heading strong{font-size:.875rem}.block-heading{flex-wrap:wrap}.block-capture,.blocks-edit-tools button,.blocks-run-tools button,.blocks-intro>button{font-size:.8125rem}.block-workspace{overscroll-behavior:contain}

@@ -21,7 +21,7 @@ const scene=new T.Scene();scene.background=new T.Color('#e9edef');scene.fog=new 
 let renderer;
 try{renderer=new T.WebGLRenderer({canvas,antialias:true});}catch(e){$('#scene-error').hidden=false;$('#scene-error').textContent='3D rendering could not start. Enable WebGL in your browser and reload.';throw e}
 renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;
-const camera=new T.PerspectiveCamera(40,1,.01,40),orbit=new OrbitControls(camera,canvas);orbit.enableDamping=true;orbit.minDistance=.45;orbit.maxDistance=9;orbit.maxPolarAngle=Math.PI-.04;
+const camera=new T.PerspectiveCamera(40,1,.01,40),orbit=new OrbitControls(camera,canvas);const motionPreference=matchMedia("(prefers-reduced-motion: reduce)");orbit.enableDamping=!motionPreference.matches;motionPreference.addEventListener("change",e=>{orbit.enableDamping=!e.matches});orbit.minDistance=.45;orbit.maxDistance=9;orbit.maxPolarAngle=Math.PI-.04;
 function resetCamera(){camera.position.set(1.1,.85,1.2);orbit.target.set(0,.3,0);orbit.update()}resetCamera();
 scene.add(new T.HemisphereLight(0xe8f2ff,0x444b37,2.6));const sun=new T.DirectionalLight(0xfff6df,4);sun.position.set(2,5,3);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);Object.assign(sun.shadow.camera,{left:-3,right:3,top:3,bottom:-3});scene.add(sun);
 const table=new T.Mesh(new T.BoxGeometry(4,.12,3.3),new T.MeshStandardMaterial({color:'#d4dce0'}));table.position.y=-.08;table.receiveShadow=true;scene.add(table);
