@@ -88,3 +88,9 @@ The included `downloads/axis-servo-bridge.ino` targets six positional servos on 
 ## Learning library
 
 Learn robotics provides 20 searchable lessons across foundations, programming, motion, workflow, fabrication and hardware. Each lesson includes an exercise and an interactive knowledge check with local progress. Arduino examples provides 18 searchable, filterable programs with model selection, suggested experiments, copy and `.ino` download. Related examples open the appropriate robot model.
+
+## Expanded lessons and assistant
+
+All 20 lessons include full reading, worked examples, four-step practice, troubleshooting and reflection alongside the quiz and independent exercise. Expand Read the full lesson to continue. Ask about this lesson opens contextual help.
+
+Ask AXIS is available on all three pages. The built-in guide works offline and clearly identifies its lesson-based guidance. Optional generative AI uses a server-only Responses API connection; sketches are shared only with explicit selection. See [AI_SETUP.md](AI_SETUP.md) for local and hosted configuration, privacy, limits and deployment verification. No API key is bundled and AI replies remain disabled until configured.

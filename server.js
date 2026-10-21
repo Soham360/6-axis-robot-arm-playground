@@ -1,4 +1,5 @@
 import http from 'node:http';
+import {handleAssistant} from './assistant-api.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -10,6 +11,8 @@ const importMap=html.match(/<script type="importmap">([\s\S]*?)<\/script>/)?.[1]
 const hash=createHash('sha256').update(importMap).digest('base64');
 const csp=`default-src 'self'; script-src 'self' https://cdn.jsdelivr.net 'sha256-${hash}'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self'; worker-src 'self'`;
 export const server=http.createServer((req,res)=>{
+  if(req.url.split("?")[0]==="/api/assistant"){handleAssistant(req,res).catch(()=>{if(!res.headersSent)res.writeHead(500,{"Content-Type":"application/json"});res.end(JSON.stringify({error:"Assistant unavailable."}))});return}
+  if(!["GET","HEAD"].includes(req.method)){res.writeHead(405).end();return}
   let file;
   try{
     const relative=decodeURIComponent(req.url.split('?')[0]);
