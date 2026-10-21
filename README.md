@@ -6,7 +6,7 @@ Run `node server.js` with Node.js 20 or newer, then visit the printed local addr
 
 ## Models and printable hardware
 
-The default model is **Thor**, an existing open-source six-axis printable robot by Ángel Larrañaga Muro and Thor contributors. Its assembly meshes, link origins, joint axes, gripper mimic joints, limits and velocity caps come from the official Thor-ROS model. Z-up upstream frames are transformed to the workbench's Y-up coordinates. The joint solver targets tool position, not a requested tool orientation. Original fixed geometry is preserved; changing motor settings can lower speed caps. Torque, loading, drivetrain coupling and electronics are not simulated.
+The default model is **Thor**, an existing open-source six-axis printable robot by Ángel Larrañaga Muro and Thor contributors. Its assembly meshes, link origins, joint axes, gripper mimic joints, limits and velocity caps come from the official Thor-ROS model. Z-up upstream frames are transformed to the workbench's Y-up coordinates. Position and orientation can be constrained together using world XYZ Euler angles. Straight-line tool moves plan intermediate IK solutions. Original fixed geometry is preserved; changing motor settings can lower speed caps. Torque, loading, drivetrain coupling and electronics are not simulated.
 
 Build arm provides a ZIP containing all 49 unchanged original STL files, attribution/license, and links to the original FreeCAD sources, bill of materials and assembly instructions. Parts use millimeters. Follow upstream instructions for quantities, orientation, material and supports; hardware and firmware must also be sourced. AXIS's virtual Axis.h library is not Thor firmware.
 
@@ -59,8 +59,32 @@ Deploy the complete root, including `vendor/`, `assets/` and `downloads/`. The s
 
 Code editor contains **Arduino** and **Blocks** mode buttons. Clicking Blocks parses the current sketch into visual blocks; clicking Arduino generates the sketch from any block changes. Switching without editing blocks preserves the original source, comments and formatting exactly. Block values synchronize into project autosaves as well.
 
-Conversion supports Axis moveTo/moveJ/home/grip/release, delay, Serial.println messages, simple scalar constants, and fixed-count for loops starting at zero with ++ increments. Separate setup and loop actions appear as startup and repeating stacks. Commands without visual equivalents, including Servo objects, dynamic loops, conditionals and custom functions, keep the editor in Arduino mode with a line-specific explanation and leave the source untouched. These sketches still run in Arduino mode.
+Conversion supports Axis moveTo/moveJ/home/grip/release, delay, Serial.println messages, simple scalar constants, and fixed-count for loops starting at zero with ++ increments. Separate setup and loop actions appear as startup and repeating stacks. Conversion supports scalar variables, arithmetic, sensor expressions, if/else, while loops, fixed repeats and no-argument functions. Commands without visual equivalents, including Servo objects, arrays and functions with parameters, keep the editor in Arduino mode with a line-specific explanation and leave the source untouched. These sketches still run in Arduino mode.
 
 Add blocks from Motion, Gripper, Control or Messages. Drag onto insertion slots to reorder or nest blocks; + buttons, up/down controls and Add inside repeat menus also work without dragging. Motion blocks can capture the current pose. Nested repeats, Undo, duplicate, remove, a starter program and Arduino download are included.
 
 Block programs use the same motor-limited worker interpreter as sketches. Pause/Resume and Step highlight the executing block. A run-once stack finishes automatically; repeating stacks continue until Stop or Escape. Blocks and the synchronized sketch are included in project files.
+
+## Expanded studio tools
+
+The Tools tab contains Scene editor, Path planning, Debugger & telemetry, Practice challenges, Fabrication workspace and Hardware connection.
+
+- Motion: the main positioning form offers world XYZ roll/pitch/yaw constraints and straight tool-line movement. Capture the current orientation as a starting point. `Arm.moveL(x,y,z,ms)` plans a line; `Arm.movePose(x,y,z,roll,pitch,yaw,ms)` constrains orientation. All intermediate poses must be reachable. Smooth interpolation and motor caps may extend the requested duration.
+- Planning: every programmed joint move samples at up to two-degree steps. Preflight colors the tool route and flags conservative self/table/object/fixture contacts. Check taught path analyzes the whole timeline. Reject-on-contact is optional and applies to programmed/target moves; manual direct posing still reports warnings. Sampling and proxy geometry do not certify physical clearance.
+- Scene: select by clicking or by name, edit position and dimensions, duplicate/delete, add fixed fixtures or bins. Scene properties are included in project files. Loose objects use approximate gravity, support heights and contact proxies; this is not a rigid-body dynamics engine.
+- Blocks: variables, assignments, arithmetic/comparison/logic expressions, if/else, while, repeat, no-argument function definitions and calls, sensor reads, orientation and straight-line blocks. Zoom, Space-drag panning, insertion snapping, collapsible groups, a minimap and Alt-arrow reordering support larger programs. Delete removes the focused block; standard undo applies outside text fields.
+- Debugging: toggle breakpoints in the gutter or enter comma-separated line numbers. The variable inspector shows scope before a statement; values are bounded for display. Command history retains 100 entries and telemetry retains 600 samples (about 60 seconds at 10 Hz). Export joint/tool CSV from the debugger.
+- Fabrication: all 49 original STL designs have local indexed mesh previews with millimeter bounds. Assembly and exploded-link views illustrate the mechanism. Editable planned/printed quantities and a hardware shopping list persist locally and export to CSV. Planned quantities default to one per design and must be verified against the upstream BOM and instructions. No mechanical validation or purchase is implied.
+- Challenges: grasp, sort, square tracing, fixture clearance, stacking and conditional logic have local completion tracking. Loading a challenge replaces scene objects.
+
+Sensors `Arm.isHolding()`, `Arm.objectCount()`, `Arm.x()/y()/z()` and `Arm.joint(1..6)` read simulation state. They do not read a physical controller.
+
+## Hardware bridge
+
+Web Serial is available only in supported secure browser contexts. Connection requires a user-selected port and the `AXIS READY 1` handshake. Calibration maps six logical joints to unique servo channels, zeros, directions and output bounds. Explicit arming attaches outputs at the six calibrated neutral positions; Send current pose is a separate action. Simulation never streams commands automatically. A demo bridge exercises the UI without a physical device.
+
+The included `downloads/axis-servo-bridge.ino` targets six positional servos on pins 2–7 at 115200 baud. It is a reference bridge for a matching servo controller, not Thor firmware. Thor's stepper hardware needs a separate controller-specific adapter. It has not been tested on physical hardware in this workspace. The firmware implements HELLO, ARM, MOVE, PING and STOP, interpolates commands, and detaches outputs when a 1.5-second heartbeat watchdog expires. STOP detaches outputs and requires rearming. Detaching can release holding torque: a physical cutoff and an appropriate mechanical setup remain necessary.
+
+## Learning library
+
+Learn robotics provides 20 searchable lessons across foundations, programming, motion, workflow, fabrication and hardware. Each lesson includes an exercise and an interactive knowledge check with local progress. Arduino examples provides 18 searchable, filterable programs with model selection, suggested experiments, copy and `.ino` download. Related examples open the appropriate robot model.
