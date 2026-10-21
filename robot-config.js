@@ -19,6 +19,7 @@ export function defaultConfig() {
     motors: JOINT_NAMES.map((_,i)=>({ type: 'servo270', speed: 220, gear: 1, microsteps: 16, pin: i+2 })) };
 }
 export function validateConfig(config) {
+  if(config?.model!==undefined&&!['thor','custom'].includes(config.model))throw Error('Choose Thor or the custom AXIS arm.');
   if (!config?.dimensions || !Array.isArray(config.motors) || config.motors.length!==6) throw Error('Configuration needs dimensions and six motors.');
   for (const [key, spec] of Object.entries(DIMENSIONS)) {
     const value=config.dimensions[key];
@@ -35,7 +36,9 @@ export function validateConfig(config) {
   }
   return structuredClone(config);
 }
+export function thorConfig(){const c=defaultConfig();c.model='thor';c.motors=c.motors.map(m=>({...m,type:'stepper',speed:90}));return c}
 export function jointSpecs(config) {
+  if(config.model==='thor')return config.motors.map((m,i)=>({min:-([170,90,90,170,90,170][i]),max:[170,90,90,170,90,170][i],speed:Math.min([.58,.23,.23,.58,1.45,1.45][i]*180/Math.PI,m.speed/m.gear),step:0,pin:m.pin,type:'stepper'}));
   return config.motors.map((m,i)=>{
     const profile=MOTORS[m.type], range=Math.min(MECHANICAL_LIMITS[i],profile.steps?Infinity:profile.range/m.gear);
     return { min:-range, max:range, speed:m.speed/m.gear,

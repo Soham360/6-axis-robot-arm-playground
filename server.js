@@ -8,7 +8,7 @@ const types={'.html':'text/html','.js':'text/javascript','.css':'text/css','.jso
 const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
 const importMap=html.match(/<script type="importmap">([\s\S]*?)<\/script>/)?.[1]??'';
 const hash=createHash('sha256').update(importMap).digest('base64');
-const csp=`default-src 'self'; script-src 'self' https://cdn.jsdelivr.net 'sha256-${hash}'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'none'; worker-src 'self'`;
+const csp=`default-src 'self'; script-src 'self' https://cdn.jsdelivr.net 'sha256-${hash}'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self'; worker-src 'self'`;
 export const server=http.createServer((req,res)=>{
   let file;
   try{

@@ -26,7 +26,7 @@ export function parseSketch(source) {
       const op=peek().value,level=prec[op];if(!level||level<min)break;take();node={kind:level===1?'assign':'binary',op,left:node,right:expression(level+(level===1?0:1)),line:t.line};
     }return node;
   }
-  function declaration(semicolon=true){const datatype=type(),decls=[];do{const name=identifier();let size=null,value=null;if(accept('[')){size=expression();expect(']')}if(accept('=')){if(accept('{')){const values=[];if(!at('}'))do{values.push(expression())}while(accept(','));expect('}');value={kind:'array',values}}else value=expression()}decls.push({name,size,value})}while(accept(','));if(semicolon)expect(';');return {kind:'declaration',datatype,decls,line:peek().line}}
+  function declaration(semicolon=true){const declarationLine=peek().line;const datatype=type(),decls=[];do{const name=identifier();let size=null,value=null;if(accept('[')){size=expression();expect(']')}if(accept('=')){if(accept('{')){const values=[];if(!at('}'))do{values.push(expression())}while(accept(','));expect('}');value={kind:'array',values}}else value=expression()}decls.push({name,size,value})}while(accept(','));if(semicolon)expect(';');return {kind:'declaration',datatype,decls,line:declarationLine}}
   function statement(){const t=peek();if(accept('{')){const body=[];while(!at('}')){if(peek().kind==='eof')error('Unclosed block.');body.push(statement())}expect('}');return {kind:'block',body,line:t.line}}if(isType())return declaration();
     if(accept('if')){expect('(');const test=expression();expect(')');const yes=statement(),no=accept('else')?statement():null;return {kind:'if',test,yes,no,line:t.line}}
     if(accept('for')){expect('(');let init=null;if(!at(';'))init=isType()?declaration(false):{kind:'expr',expr:expression()};expect(';');const test=at(';')?null:expression();expect(';');const step=at(')')?null:expression();expect(')');return {kind:'for',init,test,step,body:statement(),line:t.line}}
@@ -44,7 +44,7 @@ class Scope {
   get(name){return this.entry(name).value}
   set(name,value){const entry=this.entry(name);if(entry.constant)throw Error(`Cannot assign to constant '${name}'.`);entry.value=value;return value}
 }
-export async function runSketch(source,{call,log,shouldStop=()=>false,loopLimit=Infinity}) {
+export async function runSketch(source,{call,log,shouldStop=()=>false,loopLimit=Infinity,onStatement=async()=>{}}) {
   const program=parseSketch(source),global=new Scope();let ticks=0,depth=0;
   async function tick(){if(shouldStop())throw Error('Sketch stopped.');if(++ticks%512===0)await new Promise(r=>setTimeout(r,0));if(ticks>2000000)throw Error('Sketch instruction limit reached. Add delay() or simplify the loop.');}
   function servo(){let pin=null,setpoint=90;return Object.freeze({
@@ -68,7 +68,7 @@ export async function runSketch(source,{call,log,shouldStop=()=>false,loopLimit=
     case'binary':{const a=await evaluate(n.left,s);if(n.op==='&&')return a&&await evaluate(n.right,s);if(n.op==='||')return a||await evaluate(n.right,s);return binary(n.op,a,await evaluate(n.right,s))}
     default:throw Error('Unsupported expression.');}}
   function binary(op,a,b){switch(op){case'+':return a+b;case'-':return a-b;case'*':return a*b;case'/':if(b===0)throw Error('Division by zero.');return a/b;case'%':return a%b;case'<':return a<b;case'>':return a>b;case'<=':return a<=b;case'>=':return a>=b;case'==':return a===b;case'!=':return a!==b;default:throw Error('Unsupported operator.')}}
-  async function execute(n,s){await tick();try{switch(n.kind){case'empty':return;case'expr':await evaluate(n.expr,s);return;case'block':{const local=new Scope(s);for(const stmt of n.body){const signal=await execute(stmt,local);if(signal)return signal}return}
+  async function execute(n,s){await tick();if(n.line&&!['block','empty'].includes(n.kind))await onStatement(n.line);try{switch(n.kind){case'empty':return;case'expr':await evaluate(n.expr,s);return;case'block':{const local=new Scope(s);for(const stmt of n.body){const signal=await execute(stmt,local);if(signal)return signal}return}
     case'declaration':for(const decl of n.decls){let value;if(decl.size){const size=await evaluate(decl.size,s);if(!Number.isInteger(size)||size<1||size>256)throw Error('Array size must be 1–256.');value=Array.from({length:size},()=>n.datatype.name==='Servo'?servo():0);if(decl.value){const initial=await evaluate(decl.value,s);if(!Array.isArray(initial)||initial.length>size)throw Error('Invalid array initializer.');initial.forEach((v,i)=>value[i]=v)}}else value=decl.value?await evaluate(decl.value,s):n.datatype.name==='Servo'?servo():0;s.define(decl.name,value,n.datatype.constant)}return;
     case'if':return await evaluate(n.test,s)?execute(n.yes,s):n.no?execute(n.no,s):undefined;
     case'for':{const local=new Scope(s);if(n.init)await execute(n.init,local);while(!n.test||await evaluate(n.test,local)){const signal=await execute(n.body,local);if(signal?.kind==='return')return signal;if(signal?.kind==='break')break;if(n.step)await evaluate(n.step,local)}return}

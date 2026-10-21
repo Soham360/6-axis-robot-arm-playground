@@ -1,0 +1,206 @@
+{
+  "format": "axis-project",
+  "version": 1,
+  "name": "Thor pick and place",
+  "config": {
+    "dimensions": {
+      "base": 320,
+      "upper": 700,
+      "forearm": 580,
+      "wrist": 160,
+      "tool": 240,
+      "thickness": 140
+    },
+    "motors": [
+      {
+        "type": "stepper",
+        "speed": 90,
+        "gear": 1,
+        "microsteps": 16,
+        "pin": 2
+      },
+      {
+        "type": "stepper",
+        "speed": 90,
+        "gear": 1,
+        "microsteps": 16,
+        "pin": 3
+      },
+      {
+        "type": "stepper",
+        "speed": 90,
+        "gear": 1,
+        "microsteps": 16,
+        "pin": 4
+      },
+      {
+        "type": "stepper",
+        "speed": 90,
+        "gear": 1,
+        "microsteps": 16,
+        "pin": 5
+      },
+      {
+        "type": "stepper",
+        "speed": 90,
+        "gear": 1,
+        "microsteps": 16,
+        "pin": 6
+      },
+      {
+        "type": "stepper",
+        "speed": 90,
+        "gear": 1,
+        "microsteps": 16,
+        "pin": 7
+      }
+    ],
+    "model": "thor"
+  },
+  "angles": [
+    0,
+    -25,
+    65,
+    0,
+    35,
+    0
+  ],
+  "closed": false,
+  "sketch": "#include <Axis.h>\n\n// Thor printable arm: positions in mm, Y up.\n// Reset scene before running to restore the first cube.\nvoid setup() {\n  Serial.begin(9600);\n  Arm.moveTo(-220, 220, 200, 1500);\n  Arm.moveTo(-220, 45, 200, 1000);\n  Arm.grip();\n  Arm.moveTo(-220, 270, 200, 1500);\n  Arm.moveTo(180, 270, 200, 2000);\n  Arm.moveTo(180, 45, 200, 1000);\n  Arm.release();\n  Arm.moveTo(180, 270, 200, 1000);\n  Arm.home();\n  Serial.println(\"Thor delivery complete!\");\n}\nvoid loop() { delay(1000); }\n",
+  "path": [
+    {
+      "name": "Approach",
+      "angles": [
+        -30.25983834882584,
+        16.12086961958127,
+        90,
+        -54.13128400575213,
+        56.55206862297252,
+        0
+      ],
+      "xyz": [
+        -219.19658622027882,
+        219.95505436244628,
+        199.2696238366171
+      ],
+      "closed": false,
+      "time": 0
+    },
+    {
+      "name": "Pick",
+      "angles": [
+        -40.51264167658105,
+        48.308251406614204,
+        90,
+        -39.70993404272345,
+        26.246969697000296,
+        0
+      ],
+      "xyz": [
+        -218.94227929609332,
+        45.72596224889168,
+        199.0384357237212
+      ],
+      "closed": true,
+      "time": 2000
+    },
+    {
+      "name": "Lift",
+      "angles": [
+        -23.09478565278865,
+        32.06239751561165,
+        90,
+        71.3221666338228,
+        -90,
+        0
+      ],
+      "xyz": [
+        -221.165619168438,
+        270.3008610658045,
+        201.0596537894891
+      ],
+      "closed": true,
+      "time": 4000
+    },
+    {
+      "name": "Transfer",
+      "angles": [
+        16.716778770148654,
+        9.139222858241212,
+        90,
+        -115.3757178821808,
+        -74.6439960180915,
+        0
+      ],
+      "xyz": [
+        179.5393941874131,
+        269.97109435285796,
+        199.48821576379234
+      ],
+      "closed": true,
+      "time": 6000
+    },
+    {
+      "name": "Place",
+      "angles": [
+        30.606679155339425,
+        47.926564540590874,
+        90,
+        -142.87867740112242,
+        -41.76856803556956,
+        0
+      ],
+      "xyz": [
+        179.21892159589646,
+        45.60566774127513,
+        199.13213510655174
+      ],
+      "closed": false,
+      "time": 8000
+    },
+    {
+      "name": "Retract",
+      "angles": [
+        12.961351188294454,
+        21.877693287725386,
+        90,
+        -93.70089876738935,
+        -90,
+        0
+      ],
+      "xyz": [
+        180.9246220230895,
+        270.3107189207584,
+        201.02735780343275
+      ],
+      "closed": false,
+      "time": 10000
+    }
+  ],
+  "objects": [
+    {
+      "shape": "cube",
+      "position": [
+        -0.22,
+        0.022,
+        0.2
+      ]
+    },
+    {
+      "shape": "cylinder",
+      "position": [
+        0.24,
+        0.022,
+        0.22
+      ]
+    },
+    {
+      "shape": "sphere",
+      "position": [
+        0.3,
+        0.022,
+        -0.18
+      ]
+    }
+  ]
+}

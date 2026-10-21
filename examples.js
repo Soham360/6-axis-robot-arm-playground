@@ -1,4 +1,23 @@
 export const examples={
+thor:`#include <Axis.h>
+
+// Thor printable arm: positions in mm, Y up.
+// Reset scene before running to restore the first cube.
+void setup() {
+  Serial.begin(9600);
+  Arm.moveTo(-220, 220, 200, 1500);
+  Arm.moveTo(-220, 45, 200, 1000);
+  Arm.grip();
+  Arm.moveTo(-220, 270, 200, 1500);
+  Arm.moveTo(180, 270, 200, 2000);
+  Arm.moveTo(180, 45, 200, 1000);
+  Arm.release();
+  Arm.moveTo(180, 270, 200, 1000);
+  Arm.home();
+  Serial.println("Thor delivery complete!");
+}
+void loop() { delay(1000); }
+`,
 pick:`#include <Axis.h>
 
 // Axis is this simulator's virtual arm library.

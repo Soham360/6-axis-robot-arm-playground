@@ -1,0 +1,12 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+import {loadThor,makeThor} from '../thor-model.js';
+import {thorConfig,jointSpecs,normalizeTarget,durationFor} from '../robot-config.js';
+import {selfContacts} from '../kinematics.js';
+const originalFetch=globalThis.fetch;
+globalThis.fetch=async url=>{const bytes=await readFile(new URL('../'+String(url).replace(/^\.\//,''),import.meta.url));return {ok:true,json:async()=>JSON.parse(bytes),arrayBuffer:async()=>bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength)}};
+await loadThor();globalThis.fetch=originalFetch;
+test('real Thor has six published joint frames, finite meshes and fixed geometry',()=>{const arm=makeThor(thorConfig());try{assert.equal(arm.joints.length,6);const p=arm.position();assert.ok(p.y>.4&&p.y<.65);let count=0;arm.root.traverse(m=>{if(m.isMesh){m.geometry.computeBoundingBox();assert.ok(Number.isFinite(m.geometry.boundingBox.min.x));count++}});assert.ok(count>10);assert.equal(arm.specs[1].max,90);assert.equal(arm.specs[0].max,170);assert.ok(arm.specs[1].speed<14)}finally{arm.dispose()}});
+test('Thor inverse kinematics reaches default pick and place targets and restores pose',()=>{const arm=makeThor(thorConfig());try{for(const xyz of [[-.22,.22,.2],[-.22,.045,.2],[-.22,.27,.2],[.18,.27,.2],[.18,.045,.2]]){const before=arm.position();const angles=arm.solve(...xyz);assert.ok(before.distanceTo(arm.position())<1e-9);normalizeTarget(angles,arm.specs);arm.pose(angles);assert.ok(arm.position().distanceTo({x:xyz[0],y:xyz[1],z:xyz[2]})<.011)}}finally{arm.dispose()}});
+test('Thor constraints reject impossible targets and enforce motor timing',()=>{const arm=makeThor(thorConfig());try{assert.throws(()=>arm.solve(4,4,4),/unreachable/);assert.throws(()=>normalizeTarget([0,91,0,0,0,0],jointSpecs(thorConfig())),/J2/);assert.ok(durationFor([0,0,0,0,0,0],[0,60,0,0,0,0],100,arm.specs)>6000);assert.ok(Array.isArray(selfContacts(arm)))}finally{arm.dispose()}});

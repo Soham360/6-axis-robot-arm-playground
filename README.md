@@ -1,79 +1,64 @@
-# AXIS · 6-axis robot arm playground
+# AXIS — robotics workbench
 
-A browser-based 3D robot sandbox with customizable limbs, motors and Arduino sketches.
+Live website: https://soham360.github.io/AXIS/
 
-Live: https://soham360.github.io/AXIS/
+Run `node server.js` with Node.js 20 or newer, then visit the printed local address (default http://127.0.0.1:5173). All display assets, Three.js, and robot geometry are included locally. No build or internet connection is needed for simulation. External documentation and individual upstream part links require internet.
 
-## Run locally
+## Models and printable hardware
 
-With Node.js 20+: run `node server.js`, then open http://127.0.0.1:5173. No build is needed. Any static HTTP server also works. JavaScript modules and workers require HTTP; opening index.html as a file does not work. An internet connection is required to load the version-pinned Three.js module from jsDelivr.
+The default model is **Thor**, an existing open-source six-axis printable robot by Ángel Larrañaga Muro and Thor contributors. Its assembly meshes, link origins, joint axes, gripper mimic joints, limits and velocity caps come from the official Thor-ROS model. Z-up upstream frames are transformed to the workbench's Y-up coordinates. The joint solver targets tool position, not a requested tool orientation. Original fixed geometry is preserved; changing motor settings can lower speed caps. Torque, loading, drivetrain coupling and electronics are not simulated.
 
-## Build your arm
+Build arm provides a ZIP containing all 49 unchanged original STL files, attribution/license, and links to the original FreeCAD sources, bill of materials and assembly instructions. Parts use millimeters. Follow upstream instructions for quantities, orientation, material and supports; hardware and firmware must also be sourced. AXIS's virtual Axis.h library is not Thor firmware.
 
-Open **Build arm** to edit base height, upper-arm and forearm lengths, wrist/tool lengths and link width in millimeters. Apply rebuilds the actual model and inverse kinematics.
+- Hardware: https://github.com/AngelLM/Thor at `286b081fe6f056d87c379b884781ef77ff6a0159`.
+- Assembly display: https://github.com/AngelLM/Thor-ROS at `e11a56b5aa0d89f0b68a3ea7bd084eab4a050952`.
+- Hardware/display attribution and CC BY-SA 4.0 license: `assets/thor/`.
+- Printable originals: `downloads/thor-print-parts.zip`.
+- Mesh conversion: `scripts/convert-thor.py`; converts original COLLADA vertices, transforms, materials and triangle indices to local binary buffers. It needs NumPy and the pinned source meshes in the sibling outputs directory. Print meshes are never modified by conversion.
 
-Choose a generic positional servo (180° or 270° travel) or 200-step/revolution stepper for each of six joints. Configure motor shaft speed, gear reduction, pin assignment, and stepper microsteps. Motor speed and gearing constrain movement duration; stepper targets are quantized. Gearing also reduces positional servo travel. Shoulder, elbow and wrist-pitch motor housings change size with the profile.
-
-These are educational profiles, not specifications of actual products. Torque, electrical circuits and loading are not simulated. Scene objects respond to arm contacts, other objects, and gravity using conservative arm boxes and 75 mm round object proxies; this is simplified contact behavior rather than a rigid-body dynamics engine. Manual sliders directly pose the joints; programmed movements respect motor speeds.
-
-Applied builds and sketches are saved locally in the browser. Export/import build JSON to share a configuration. Applying a build stops the sketch and releases any payload. Reset scene resets objects and pose while keeping your build.
-
-## Arduino sketches
-
-The editor interprets a bounded Arduino/C++ subset in a dedicated worker. `setup()` runs once and `loop()` repeats until Stop. This is **not** an AVR emulator or a compiler for arbitrary Arduino libraries. Unsupported syntax reports errors. Old JavaScript programs remain in their previous browser storage key but are not loaded into the Arduino editor.
-
-```cpp
-#include <Servo.h>
-Servo base;
-
-void setup() {
-  base.attach(2);
-}
-
-void loop() {
-  base.write(120);
-  delay(500);
-  base.write(60);
-  delay(500);
-}
-```
-
-Default joint pins are 2–7 for J1–J6. Pin 8 is reserved for the gripper. Servo.write accepts 0–180° with 90° mapped to joint neutral, subject to motor and mechanical limits. Servo writes set a target and return immediately; multiple axes can move together. Servo.read returns the last requested angle. Gripper angles below 90 close it; 90 or above open it. Servo objects cannot attach to stepper axes.
-
-### Virtual Axis library
-
-`#include <Axis.h>` exposes simulator-specific blocking commands:
-
-- `Arm.moveJ(j1,j2,j3,j4,j5,j6,ms=1000)`: joint angles in degrees from neutral.
-- `Arm.moveTo(x,y,z,ms=1000)`: tool position in **millimeters**, Y up. Uses current geometry and motor limits.
-- `Arm.grip()`, `Arm.release()`, `Arm.home()`.
-
-Motor speed may extend requested movement duration. Arm commands work with either servo or stepper axes. Axis.h is a virtual API; it requires a hardware-specific implementation before compiling for a physical robot. Changing dimensions/limits can make example coordinates unreachable; the console reports this.
-
-### Supported subset
-
-Scalar declarations (int, long, float, double, bool, String, char), const, fixed-size arrays, user functions, if/else, for/while, break/continue/return, arithmetic/comparison/logical expressions, comments, Servo arrays, attach/write/read/detach/attached, Serial.begin/print/println, delay, millis, abs/min/max/sin/cos/sqrt/constrain/map. Durations are 0–30000 ms. Numeric arithmetic uses browser numbers; AVR integer widths, overflow, exact hardware timing and integer-division semantics are not emulated.
-
-Only Servo.h and Axis.h includes are supported. No pointers, classes, macros, arbitrary libraries, GPIO or interrupts. The interpreter cannot call JavaScript globals or execute JavaScript. Stop terminates the worker, including infinite loops. An instruction budget limits tight computations; use delay() in repeated loops.
+Choose **AXIS · customizable geometry** for configurable link dimensions and generic servo/stepper profiles. This model is an educational mechanism; the Thor print files apply only to the fixed Thor model. Higher gear ratios lower output speed and servo travel. Stepper motion is quantized in the custom model. Geometry changes may invalidate stored path coordinates; validate or rerecord those points.
 
 ## Workbench
 
-Drag to orbit, scroll to zoom, right-drag to pan. Add cubes, cylinders and spheres; use the default Pick & place sketch to move the first cube. The gripper grabs within 160 mm of the tool. Released objects fall to the table. Ctrl/Cmd+Enter runs a sketch; API guide has the command reference and .ino download.
+Drag the background to orbit, scroll to zoom, and right-drag to pan. Use Perspective, Front, Top, Side or Fullscreen. On desktop the viewport remains visible while editing the movement timeline. The reach overlay shows sampled tool positions within joint limits; it does not certify obstacle avoidance or continuous coverage.
 
-## Hosting and checks
+Enter exact X/Y/Z coordinates in millimeters, with Y up. Choose travel time and Move to target, or use 1/5/10/25 mm jog buttons. Unreachable targets preserve the previous pose. Requested and motor-aware durations are shown separately; smoothstep interpolation respects peak motor speed.
 
-All runtime files are static. Deploy the root with **all modules and vendor/OrbitControls.js** intact. The import map resolves Three.js r170 from a version-pinned CDN URL; OrbitControls and its MIT license are included. A loading/error message stays visible if the rendering module fails to load. Fonts are optional.
+Joint controls pose each joint directly. Joint-limit warnings and centerline-based self-contact checks flag possible intersections between nonadjacent links. These are approximate warnings, not collision prevention or a full physics model. Scene objects use conservative link collision shapes, round object proxies and simple gravity. Thor objects are scaled to its gripper; the larger custom model uses larger objects. No mass, friction, torque or complete mesh collision is modeled.
 
-For tests, install the pinned development dependency with `npm install`, then run `npm test` (or `node --test tests/*.test.js`). Tests cover sketch semantics, worker interruption, input validation, geometry, inverse kinematics and motor behavior.
+## Timeline and projects
 
-## Learn and teach
+Record point captures joint angles, coordinates and gripper state. Rename, reorder, update, delete or go to any point. Every point has an editable travel time (0.1–30 s) and open/closed gripper action. Play path highlights the active point; playback speed is 0.5×/1×/2×, subject to motor limits. The displayed estimate accounts for current joint pose and speeds. Tool paths between points can curve because playback interpolates joint angles. Undo removes the last point; Clear removes the path. Path JSON and virtual Axis.h .ino exports are available.
 
-Use Learn robotics for lessons on joints, coordinates, reach, object handling, arm design, and teaching paths. Arduino examples contains four annotated sketches with links that load them into the simulator.
+Save project downloads one `.axis.json` containing model/build, sketch, current angles, gripper state, scene objects and the complete path. Open project validates the whole file before restoring it. A snapshot is autosaved every five seconds; Restore autosave appears after reloading. Save a project file for a durable backup. Browser storage can be unavailable or cleared. Project files support up to 100 scene objects, 2,000 path points and 200,000 sketch characters.
 
-Drag the blue tool handle to teach on a horizontal plane. Adjust Tool height for vertical motion or use Joint controls. Click Record point at each pose, then Play path to interpolate the captured joint angles. Coordinates, angles, elapsed capture times and gripper state are saved locally. Motor limits can extend requested playback times. The blue polyline connects captured coordinates; interpolated joint motion may curve between them. Stop interrupts playback; Clear path removes the saved path. Export .ino creates an Axis.h sketch. Rerecord after changing the arm build.
+Load demo restores a complete Thor pick-and-place experiment with six editable path points. Guided first task walks through joint motion, Cartesian positioning, object handling, path teaching and saving, with completion feedback.
 
-Collision response runs in small angular steps during arm movement to reduce tunneling. Shapes are approximations, and contacts do not model friction, mass, torque, or self-collision.
+## Arduino subset and debugging
 
-### Path workspace improvements
+The editor interprets a bounded Arduino/C++ subset in a dedicated worker. `setup()` runs once; `loop()` repeats until Stop. This is not an AVR compiler or arbitrary library runtime. Unsupported syntax produces a source-line error.
 
-Undo point removes the last recorded pose. Save path JSON creates a portable backup; Load path JSON validates and restores up to 2,000 poses. Playback speed offers 0.5×, 1× and 2× capture timing, subject to motor speed limits. The estimated duration is requested time, not a motor-aware prediction. Escape stops all movement from anywhere. Workbench tabs support arrow keys, Home and End. The height readout shows actual tool height in millimeters.
+- Ctrl/Cmd+Enter runs; Escape stops all motion.
+- Step starts paused before the first statement. Step executes a statement and its commanded motion/delay, then waits at the next statement. A loop/conditional header and its body may be separate steps.
+- Pause freezes programmed movement, servo motion and simulated delays; Resume continues. Stop terminates the worker, including tight infinite loops.
+- The gutter highlights the current statement. Errors identify and select the source line. The sketch and example selector are read-only while a sketch runs.
+
+`#include <Axis.h>` exposes blocking `Arm.moveJ(j1,j2,j3,j4,j5,j6,ms=1000)`, `Arm.moveTo(x,y,z,ms=1000)`, `Arm.grip()`, `Arm.release()` and `Arm.home()`. Coordinates are millimeters, angles degrees from neutral; motor limits may lengthen a requested duration. `delay(ms)` supports 0–30000 ms. Serial.begin/print/println are supported.
+
+`#include <Servo.h>` supports Servo.attach/write/read/detach/attached on servo-configured joints in the custom model. Pins 2–7 map to J1–J6 by default; pin 8 is the gripper. Write 90 is joint neutral, subject to limits; gripper values below 90 close it. Servo cannot drive the Thor stepper axes. Use the Thor or coordinated joints examples for Thor, and select the custom model for the servo example.
+
+Also supported: scalar declarations, fixed arrays, functions, if/else, for/while, break/continue/return, arithmetic/comparisons/logical expressions, millis, abs/min/max/sin/cos/sqrt/constrain/map. Browser numeric arithmetic applies; AVR integer widths, timing and overflow are not emulated. Pointers, classes, macros, GPIO, interrupts and other libraries are unsupported.
+
+## Tests and deployment
+
+Run `npm test` or `node --test tests/*.test.js`. Tests cover sketch semantics and interruption, debugger statement gating, project validation, path timing, actual Thor frames and inverse kinematics, motor limits, collision proxies, and static delivery of every runtime asset and print archive.
+
+Deploy the complete root, including `vendor/`, `assets/` and `downloads/`. The static site requires no backend. Local preview uses a restrictive Content Security Policy with self-only asset fetching. Three.js r170 and OrbitControls retain their MIT licenses. Robot mechanical/display assets retain their upstream attribution and licenses.
+
+## Visual block coding
+
+Open the **Blocks** tab for Scratch-style programming. Add blocks from Motion, Gripper, Control or Messages. Drag onto insertion slots to reorder or nest blocks; + buttons, up/down controls and Add inside repeat menus also work without dragging. Blocks support tool coordinates, six joint angles, current-pose capture, home, gripper actions, waits, messages and nested repeats. The forever checkbox repeats the whole stack.
+
+Run blocks uses the same motor-limited worker interpreter as sketches. A run-once stack finishes automatically. Pause/Resume and Step highlight the executing block. Undo, duplicate, remove, a starter program and generated Arduino download are included. Blocks persist locally and are included in project files; older projects load an empty block stack.
+
+Block execution preserves the text sketch. Replace code editor with this sketch is an explicit one-way conversion. Arbitrary text sketches cannot be converted back into blocks.

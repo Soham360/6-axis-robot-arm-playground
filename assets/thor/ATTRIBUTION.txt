@@ -1,0 +1,20 @@
+Thor printable parts — original files in millimeters
+
+Creator: Ángel Larrañaga Muro and Thor contributors
+Source: https://github.com/AngelLM/Thor
+Pinned revision: 286b081fe6f056d87c379b884781ef77ff6a0159
+License: Creative Commons Attribution-ShareAlike 4.0 International (included).
+STL files are copied unchanged. AXIS display meshes are converted separately from Thor-ROS revision e11a56b5aa0d89f0b68a3ea7bd084eab4a050952.
+
+Print at original scale, in millimeters. Required quantities, orientations,
+materials and supports depend on the part: follow the official instructions.
+A physical robot also requires motors, bearings, belts, fasteners, electronics
+and hardware firmware. These STL files alone are not a complete robot.
+
+Printing and assembly: http://thor.angel-lm.com/documentation/
+Bill of materials: http://thor.angel-lm.com/documentation/bom/
+Assembly: http://thor.angel-lm.com/documentation/assembly/
+Editable CAD: https://github.com/AngelLM/Thor/tree/286b081fe6f056d87c379b884781ef77ff6a0159/freecad-src
+
+The AXIS Arduino subset and Axis.h are educational simulation interfaces,
+not Thor firmware. Follow Thor's controller and firmware documentation.
