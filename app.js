@@ -1,3 +1,4 @@
+import './workspace-layout.js';
 import {exampleNotes} from './example-notes.js';
 import {setupStudio} from './studio.js';
 import {sketchToBlocks,compileBlocks} from './blocks-data.js';

@@ -1,0 +1,79 @@
+/* Viewport-sized simulation dashboard, following the wind tunnel workspace. */
+html:has(body.simulation-workspace){height:100%;overflow:hidden}
+body.simulation-workspace{height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+.simulation-workspace header{flex:none;min-height:3.5rem;padding:.4rem 1.25rem;gap:1rem;flex-wrap:nowrap}
+.simulation-workspace header .brand>span:not(.brand-mark){display:none}
+.simulation-workspace header nav{width:auto;order:initial;border:0;padding:0;gap:.25rem}
+.simulation-workspace header nav a{min-height:2.5rem;padding:.4rem .65rem;font-size:.8125rem}
+.simulation-workspace .header-status{font-size:.75rem;gap:.75rem}
+.simulation-workspace main#workbench{flex:1;width:100%;max-width:none;min-height:0;overflow:hidden;grid-template-columns:minmax(0,1.35fr) minmax(25rem,1fr)}
+.simulation-workspace .workspace{padding:.75rem;display:grid;grid-template-rows:auto auto minmax(0,1fr) auto auto;gap:.5rem;min-height:0;overflow:hidden}
+.simulation-workspace .intro{margin:0;gap:.75rem;align-items:center}
+.simulation-workspace .intro h1{font-size:1.25rem;line-height:1.25;margin:0;letter-spacing:-.02em}
+.simulation-workspace .intro .eyebrow,.simulation-workspace .intro p:last-child{display:none}
+.simulation-workspace .intro>button{font-size:.75rem;min-height:2rem;padding:.3rem .6rem}
+.simulation-workspace .project-bar{margin:0;gap:.375rem;align-items:center}
+.simulation-workspace .project-bar>label:first-child{flex-basis:auto;min-width:0;flex:1}
+.simulation-workspace #project-name{width:8rem;min-width:0;flex:1}
+.simulation-workspace .project-bar button,.simulation-workspace .project-bar .file-button{min-height:2rem;font-size:.75rem;padding:.35rem .5rem;flex:none}
+.simulation-workspace .project-bar>span{font-size:.6875rem;line-height:1.4}
+.simulation-workspace .viewport{position:relative;top:auto;height:100%;min-height:0;box-shadow:none}
+.simulation-workspace .telemetry{padding:.5rem 0;gap:.5rem;border:0;grid-template-columns:1.5fr .7fr .7fr 1fr}
+.simulation-workspace .telemetry small{font-size:.625rem;margin:0 0 .25rem}
+.simulation-workspace .telemetry strong{font-size:.75rem}
+.simulation-workspace .safety-status{padding:0;min-height:1.25rem;font-size:.6875rem;line-height:1.4}
+.simulation-workspace aside{position:static;max-height:none;overflow:hidden;min-height:0;border-top:0;display:flex;flex-direction:column}
+.simulation-workspace .tabs{position:static;flex:none;margin:.75rem .75rem 0;gap:.2rem;padding:.3rem}
+.simulation-workspace .tabs button{flex:1 1 22%;min-height:2rem;padding:.35rem .25rem;font-size:.75rem;white-space:normal}
+.simulation-workspace .panel{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;padding:1rem}
+.simulation-workspace .panel[hidden]{display:none!important}
+.simulation-workspace #code{padding:0;display:flex;flex-direction:column;overflow:hidden}
+.simulation-workspace .editor-mode{flex:none;margin:.75rem .75rem 0}
+.simulation-workspace .editor-mode button{min-height:2rem;font-size:.8125rem}
+.simulation-workspace #conversion-status{flex:none;margin:.25rem 1rem;font-size:.75rem;max-height:3.5rem;overflow:auto}
+.simulation-workspace #conversion-status:empty{display:none}
+.simulation-workspace #arduino-view{flex:1;min-height:0;display:flex;flex-direction:column}
+.simulation-workspace .editor-top{flex:none;padding:.5rem .75rem;gap:.5rem;font-size:.75rem}
+.simulation-workspace .editor-top select{min-height:2rem;font-size:.75rem;max-width:65%}
+.simulation-workspace .editor-feedback{flex:none;margin:.25rem .75rem;font-size:.75rem}
+.simulation-workspace .editor-wrap{flex:1;min-height:0;margin:0 .75rem;padding-top:.5rem;padding-bottom:.5rem;overflow:hidden}
+.simulation-workspace .editor-wrap textarea{height:100%;min-height:0;resize:none}
+.simulation-workspace #line-numbers{height:100%;min-height:0}
+.simulation-workspace .run-bar{flex:none;padding:.5rem .75rem;gap:.375rem}
+.simulation-workspace .run-bar>span{font-size:.6875rem}
+.simulation-workspace .run-bar button{min-height:2rem;font-size:.75rem;padding:.35rem .65rem}
+.simulation-workspace #blocks{flex:1;min-height:0;overflow:auto;padding:1rem}
+.simulation-workspace .console{flex:none;min-height:0;margin:0;height:7rem}
+.simulation-workspace .console-title{padding:.3rem .75rem;font-size:.6875rem}
+.simulation-workspace .console-title button{min-height:1.75rem;padding:.2rem .5rem}
+.simulation-workspace #logs{height:4.5rem;padding:0 .75rem .5rem;font-size:.75rem}
+.simulation-workspace aside>footer{flex:none;padding:.3rem .75rem;font-size:.625rem}
+.simulation-workspace aside>footer>span:last-child{font-size:.625rem}
+.simulation-workspace .workspace-control-panel>.positioning,.simulation-workspace .workspace-control-panel>.recorder{padding:0;border:0}
+.simulation-workspace .workspace-control-panel>.objects{align-items:flex-start;flex-wrap:wrap;padding:0}
+.simulation-workspace .workspace-control-panel>.objects>div{width:100%;margin:0 0 1rem}
+.simulation-workspace .recorder ol{max-height:none}
+.workspace-pane-switch{display:none;gap:.25rem}
+@media(max-width:1000px){
+ .simulation-workspace header{flex-wrap:wrap;gap:.4rem .75rem;padding:.5rem .75rem}
+ .simulation-workspace .brand{margin-right:auto}.simulation-workspace .header-status{margin-left:0}
+ .simulation-workspace header nav{order:3;flex:1;justify-content:flex-start;margin:0}
+ .workspace-pane-switch{display:flex;order:4}.workspace-pane-switch button{min-height:2.5rem;padding:.4rem .65rem;font-size:.8125rem}
+ .workspace-pane-switch button[aria-pressed=true]{background:#245ac7;color:white;border-color:#245ac7}
+ .simulation-workspace main#workbench{grid-template-columns:minmax(0,1fr)}
+ .simulation-workspace[data-workspace-pane=scene] main>aside,.simulation-workspace[data-workspace-pane=controls] main>.workspace{display:none}
+ .simulation-workspace main>.workspace{border-right:0}
+ .simulation-workspace .editor-top select{width:auto}
+}
+@media(max-width:480px){
+ .simulation-workspace header nav a{font-size:.6875rem;padding:.35rem .4rem;min-height:2rem}
+ .workspace-pane-switch button{font-size:.75rem;min-height:2rem;padding:.35rem .5rem}
+ .simulation-workspace .header-status .live{font-size:.6875rem}
+ .simulation-workspace .project-bar>label:first-child{flex-basis:100%}
+ .simulation-workspace .telemetry{grid-template-columns:1fr 1fr}
+ .simulation-workspace .view-tools{bottom:2.75rem}.simulation-workspace .view-tools button{min-height:2rem;font-size:.6875rem;padding:.3rem}
+ .simulation-workspace .view-help{font-size:.625rem;max-width:calc(100% - 3.5rem)}
+ .simulation-workspace .tabs button{min-height:2.5rem}
+}
+@media(max-height:600px){.simulation-workspace .console{height:4.5rem}.simulation-workspace #logs{height:2.5rem}.simulation-workspace .project-bar>span{display:none}}
+@media(pointer:coarse){.simulation-workspace button,.simulation-workspace .file-button,.simulation-workspace select{min-height:2.75rem}}

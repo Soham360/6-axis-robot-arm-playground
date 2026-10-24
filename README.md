@@ -94,3 +94,7 @@ Learn robotics provides 20 searchable lessons across foundations, programming, m
 All 20 lessons include full reading, worked examples, four-step practice, troubleshooting and reflection alongside the quiz and independent exercise. Expand Read the full lesson to continue. Ask about this lesson opens contextual help.
 
 Ask AXIS is available on all three pages. The built-in guide works offline and clearly identifies its lesson-based guidance. Optional generative AI uses a server-only Responses API connection; sketches are shared only with explicit selection. See [AI_SETUP.md](AI_SETUP.md) for local and hosted configuration, privacy, limits and deployment verification. No API key is bundled and AI replies remain disabled until configured.
+
+## Screen-sized workbench
+
+The simulator uses a viewport-sized dashboard inspired by the Wind Tunnel Simulator. The 3D view, telemetry, code editor and console stay within the screen. Position tool, Teach path and Scene objects are workbench tabs alongside the existing editor, joints, build, tools and API panels. Longer control panels and code scroll internally. Narrow screens switch between 3D scene and Controls using the header buttons. Learn and Examples remain normal scrolling reading pages.
