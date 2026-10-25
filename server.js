@@ -5,7 +5,7 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {createHash} from 'node:crypto';
 const root=path.dirname(fileURLToPath(import.meta.url));
-const types={'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json'};
+const types={'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json','.svg':'image/svg+xml'};
 const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
 const importMap=html.match(/<script type="importmap">([\s\S]*?)<\/script>/)?.[1]??'';
 const hash=createHash('sha256').update(importMap).digest('base64');
